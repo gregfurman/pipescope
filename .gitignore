@@ -19,3 +19,6 @@
 
 # Go workspace file
 go.work
+
+# Expected location of builds
+targets
