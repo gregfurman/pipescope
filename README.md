@@ -8,6 +8,11 @@ PipeScope is a command-line tool that monitors the status of remote pipelines.
 ## How it works
 PipeScope uses [external clients](https://github.com/xanzy/go-gitlab) in conjunction with a [pure Golang git implementation](https://github.com/go-git/go-git) to dynamically stream the pipeline status of your repo's `HEAD` commit.
 
+## Installation
+```shell
+go install github.com/gregfurman/pipescope@latest
+```
+
 ## Usage
 Be sure to specify your access token (currently only GitLab supported) via the `--access-token` flag. 
 
