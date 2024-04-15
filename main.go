@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log/slog"
 	"os"
 	"time"
@@ -55,8 +56,12 @@ func main() {
 		slog.Any("pipeline_id", pipeline.ID),
 	)
 
-	for status = range statusCh {
-		slog.Info("\033[1A\033[K"+"Polling Pipeline", slog.Any("status", status), slog.Any("project_id", pipeline.ProjectID), slog.Any("pipeline_id", pipeline.ID))
+	for s := range statusCh {
+		if status == s {
+			fmt.Print("\033[1A\033[K")
+		}
+		status = s
+		slog.Info("Polling Pipeline", slog.Any("status", status), slog.Any("project_id", pipeline.ProjectID), slog.Any("pipeline_id", pipeline.ID))
 	}
 
 	if *fplaySoundOnComplete {
