@@ -3,6 +3,7 @@ module github.com/gregfurman/pipescope
 go 1.21
 
 require (
+	github.com/gen2brain/beeep v0.0.0-20240112042604-c7bb2cd88fea
 	github.com/go-git/go-git/v5 v5.12.0
 	github.com/xanzy/go-gitlab v0.102.0
 )
@@ -14,7 +15,6 @@ require (
 	github.com/cloudflare/circl v1.3.7 // indirect
 	github.com/cyphar/filepath-securejoin v0.2.4 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
-	github.com/gen2brain/beeep v0.0.0-20240112042604-c7bb2cd88fea // indirect
 	github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376 // indirect
 	github.com/go-git/go-billy/v5 v5.5.0 // indirect
 	github.com/go-toast/toast v0.0.0-20190211030409-01e6764cf0a4 // indirect

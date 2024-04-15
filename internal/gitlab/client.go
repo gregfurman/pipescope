@@ -23,11 +23,9 @@ func New(token string) (*Client, error) {
 }
 
 func (c *Client) GetProjectID(path string) (int, error) {
-	projectName := strings.TrimPrefix(strings.TrimSuffix(path, ".git"), "git@gitlab.com:")
-	project, _, err := c.api.Projects.GetProject(projectName, nil)
-
+	project, _, err := c.api.Projects.GetProject(strings.TrimPrefix(strings.TrimSuffix(path, ".git"), "git@gitlab.com:"), nil)
 	if err != nil {
-		return 0, fmt.Errorf("failed to get project_id for %s: %w", projectName, err)
+		return 0, fmt.Errorf("failed to get project_id: %w", err)
 	}
 
 	return project.ID, nil
