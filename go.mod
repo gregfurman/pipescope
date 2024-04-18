@@ -5,6 +5,7 @@ go 1.21
 require (
 	github.com/gen2brain/beeep v0.0.0-20240112042604-c7bb2cd88fea
 	github.com/go-git/go-git/v5 v5.12.0
+	github.com/google/go-github/v61 v61.0.0
 	github.com/xanzy/go-gitlab v0.102.0
 )
 

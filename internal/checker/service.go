@@ -4,19 +4,19 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/gregfurman/pipescope/internal/gateway"
 	"github.com/gregfurman/pipescope/internal/git"
-	"github.com/gregfurman/pipescope/internal/gitlab"
 )
 
 type Service struct {
-	gitlabClient *gitlab.Client
-	gitClient    *git.Client
+	gatewayClient gateway.Client
+	gitClient     *git.Client
 }
 
-func New(glc *gitlab.Client, gc *git.Client) *Service {
+func New(gw gateway.Client, gc *git.Client) *Service {
 	return &Service{
-		gitlabClient: glc,
-		gitClient:    gc,
+		gatewayClient: gw,
+		gitClient:     gc,
 	}
 }
 
@@ -29,7 +29,7 @@ func (s *Service) GetPipelineStatus() (string, error) {
 	return pipeline.Status, nil
 }
 
-func (s *Service) GetPipeline() (*gitlab.Pipeline, error) {
+func (s *Service) GetPipeline() (*gateway.Pipeline, error) {
 	url, err := s.gitClient.GetRemoteURL()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get remote url from git: %w", err)
@@ -40,21 +40,20 @@ func (s *Service) GetPipeline() (*gitlab.Pipeline, error) {
 		return nil, fmt.Errorf("failed to get HEAD SHA ID from git: %w", err)
 	}
 
-	id, err := s.gitlabClient.GetProjectID(url)
+	pipeline, err := s.gatewayClient.GetPipelineBySha(url, sha)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get project ID from GitLab: %w", err)
+		return nil, fmt.Errorf("failed to get pipeline from Gateway client: %w", err)
 	}
 
-	pipeline, err := s.gitlabClient.GetPipelineBySha(id, sha)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get project ID from GitLab: %w", err)
+	if pipeline.CommitSha == "" {
+		pipeline.CommitSha = sha
 	}
 
 	return pipeline, nil
 }
 
-func (s *Service) GetPipelineStatusByID(id, pid int) (string, error) {
-	pipeline, err := s.gitlabClient.GetPipeline(id, pid)
+func (s *Service) GetPipelineStatusByID(id string, pid int) (string, error) {
+	pipeline, err := s.gatewayClient.GetPipeline(id, pid)
 	if err != nil {
 		return "", fmt.Errorf("failed to get project from GitLab: %w", err)
 	}
@@ -62,7 +61,7 @@ func (s *Service) GetPipelineStatusByID(id, pid int) (string, error) {
 	return pipeline.Status, nil
 }
 
-func (s *Service) PollPipelineStatus(id, pid int, freq time.Duration) (chan string, chan struct{}) {
+func (s *Service) PollPipelineStatus(id string, pid int, freq time.Duration) (chan string, chan struct{}) {
 	ticker := time.NewTicker(freq)
 
 	doneCh := make(chan struct{})
@@ -75,7 +74,7 @@ func (s *Service) PollPipelineStatus(id, pid int, freq time.Duration) (chan stri
 				status, err := s.GetPipelineStatusByID(id, pid)
 				statusCh <- status
 
-				if err != nil || !gitlab.IsStatusPending(status) {
+				if err != nil || !s.gatewayClient.IsStatusPending(status) {
 					close(doneCh)
 				}
 			case <-doneCh:
