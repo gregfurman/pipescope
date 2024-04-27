@@ -26,7 +26,7 @@ func main() {
 	// Define clients
 	gitClient, err := git.New(*fgitDirectoryLoc)
 	if err != nil {
-		panic(err)
+		exit(err)
 	}
 
 	var gatewayClient gateway.Client
@@ -45,7 +45,7 @@ func main() {
 	}
 
 	if err != nil {
-		panic(err)
+		exit(err)
 	}
 
 	// Define service
@@ -53,7 +53,7 @@ func main() {
 
 	// Run polling
 	if err := run(svc, *fpollFrequency); err != nil {
-		panic(err)
+		exit(err)
 	}
 
 	if *fplaySoundOnComplete {
@@ -101,4 +101,9 @@ func setFromEnv(name, defaultValue string) string {
 	}
 
 	return defaultValue
+}
+
+func exit(err error) {
+	slog.Error(err.Error())
+	os.Exit(1)
 }

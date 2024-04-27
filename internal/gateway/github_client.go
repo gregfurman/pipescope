@@ -50,7 +50,7 @@ func (c *GitHubClient) GetPipelineBySha(id, sha string) (*Pipeline, error) {
 	}
 
 	if len(runs.WorkflowRuns) == 0 {
-		return nil, fmt.Errorf("no pipelines found")
+		return nil, fmt.Errorf("no pipelines found for project %s@%s", id, sha)
 	}
 
 	return workflowToPipeline(runs.WorkflowRuns[0]), nil

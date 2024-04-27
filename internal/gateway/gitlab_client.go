@@ -42,7 +42,7 @@ func (c *GitLabClient) GetPipelineBySha(id string, sha string) (*Pipeline, error
 	}
 
 	if len(pipelines) == 0 {
-		return nil, fmt.Errorf("no pipelines found")
+		return nil, fmt.Errorf("no pipelines found for project %s@%s", id, sha)
 	}
 
 	return &Pipeline{
