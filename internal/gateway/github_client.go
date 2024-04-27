@@ -3,7 +3,6 @@ package gateway
 import (
 	"context"
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/google/go-github/v61/github"
@@ -78,8 +77,8 @@ func workflowToPipeline(wf *github.WorkflowRun) *Pipeline {
 
 	return &Pipeline{
 		Status:    status,
-		ID:        int(wf.GetWorkflowID()),
-		ProjectID: strconv.FormatInt(wf.GetID(), 10),
+		ID:        int(wf.GetID()),
+		ProjectID: wf.GetRepository().GetFullName(),
 		URL:       wf.GetHTMLURL(),
 		CommitSha: wf.GetHeadCommit().GetSHA(),
 	}

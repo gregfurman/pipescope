@@ -55,7 +55,7 @@ func (s *Service) GetPipeline() (*gateway.Pipeline, error) {
 func (s *Service) GetPipelineStatusByID(id string, pid int) (string, error) {
 	pipeline, err := s.gatewayClient.GetPipeline(id, pid)
 	if err != nil {
-		return "", fmt.Errorf("failed to get project from GitLab: %w", err)
+		return "", fmt.Errorf("failed to get project: %w", err)
 	}
 
 	return pipeline.Status, nil
