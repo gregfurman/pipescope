@@ -68,6 +68,7 @@ func run(svc *checker.Service, pollFrequency time.Duration) error {
 	if err != nil {
 		return fmt.Errorf("checker Service GET pipeline failed: %w", err)
 	}
+
 	status := pipeline.Status
 
 	slog.Group("pipeline")
@@ -80,9 +81,10 @@ func run(svc *checker.Service, pollFrequency time.Duration) error {
 	)
 
 	logger.Info(fmt.Sprintf("Polled Pipeline [status=%s]", pipeline.Status))
+
 	statusCh, _ := svc.PollPipelineStatus(pipeline.ProjectID, pipeline.ID, pollFrequency)
 	for s := range statusCh {
-		if status == "" {
+		if s == "" {
 			continue
 		}
 

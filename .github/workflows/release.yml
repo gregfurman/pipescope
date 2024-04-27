@@ -1,0 +1,76 @@
+name: tag-release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  tag:
+    if: ${{ github.repository == 'gregfurman/pipescope' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - run: /usr/bin/git config --global user.email actions@github.com
+      - run: /usr/bin/git config --global user.name 'GitHub Actions Release Tagger'
+      - run: hack/tag-release.sh
+        id: tag_release
+    outputs:
+      release_tag: ${{ steps.tag_release.outputs.release_tag }}
+
+  release:
+    needs: tag
+    runs-on: ubuntu-latest
+    permissions:
+        contents: write
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Get previous tag
+      id: prev_tag
+      run: echo "::set-output name=PREV_TAG::$(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1))"
+
+    - name: Get commit log
+      id: commit_log
+      run: echo "::set-output name=COMMIT_LOG::$(git log --pretty=format:'- %s (%h)' ${PREV_TAG}..HEAD)"
+
+    - name: Setup Golang
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.21.x
+
+    - name: Build Go Binary
+      run: |
+        GOOS=linux GOARCH=amd64 go build -o pipescope main.go
+    - uses: actions/upload-artifact@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        name: ecr-credential-provider
+        path: ecr-credential-provider
+
+    - uses: actions/create-release@v1
+      id: create_release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ needs.tag.outputs.release_tag }}
+        release_name: ${{ needs.tag.outputs.release_tag }}
+        body: |
+          Changes in this release:
+            ${{ steps.commit_log.outputs.COMMIT_LOG }}
+        draft: false
+        prerelease: false
+    
+    - uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./pipescope
+        asset_name: pipescope
+        asset_content_type: application/octet-stream
