@@ -2,6 +2,7 @@ package gateway
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -66,6 +67,10 @@ func (c *GitHubClient) GetPipeline(id string, pid int) (*Pipeline, error) {
 		return nil, fmt.Errorf("failed to retrieve pipeline from GitHub: %w", err)
 	}
 
+	if workflow == nil || workflow.ID == nil {
+		return nil, errors.New("no workflows found")
+	}
+
 	return workflowToPipeline(workflow), nil
 }
 
@@ -80,7 +85,7 @@ func workflowToPipeline(wf *github.WorkflowRun) *Pipeline {
 		ID:        int(wf.GetID()),
 		ProjectID: wf.GetRepository().GetFullName(),
 		URL:       wf.GetHTMLURL(),
-		CommitSha: wf.GetHeadCommit().GetSHA(),
+		CommitSha: wf.GetHeadSHA(),
 	}
 }
 

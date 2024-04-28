@@ -1,6 +1,7 @@
 package gateway
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -58,6 +59,10 @@ func (c *GitLabClient) GetPipeline(id string, pid int) (*Pipeline, error) {
 	pipeline, _, err := c.api.Pipelines.GetPipeline(id, pid)
 	if err != nil {
 		return nil, fmt.Errorf("failed to retrieve pipeline: %w", err)
+	}
+
+	if pipeline == nil || pipeline.ID == 0 {
+		return nil, errors.New("no pipelines found")
 	}
 
 	return &Pipeline{

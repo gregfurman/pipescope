@@ -46,7 +46,7 @@ Output:
 
 ## Limitations/Roadmap
 - <b>Project is currently experimental</b> so please do not use this in production anywhere
-- Needs CI/CD, tests, and a Makefile
+- <s>Needs CI/CD, tests, and a Makefile</s>
 - <s>Currently, PipeScope can only monitor GitLab pipelines. Future versions will extend this to include GitHub workflows.</s>
 - There is not a lot of flexibility to select pipelines or projects via command-line input -- this should be changed to allow custom pipeline IDs to be specified.
 - Include more information on pipeline jobs

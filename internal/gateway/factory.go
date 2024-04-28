@@ -5,7 +5,10 @@ import (
 	"strings"
 )
 
-func New(token string, t ProviderType) (Client, error) { //nolint:ireturn
+func New(token string, t ProviderType) ( //nolint:ireturn
+	Client,
+	error,
+) {
 	switch t {
 	case GitHub:
 		return NewGitHubClient(token)
@@ -16,7 +19,10 @@ func New(token string, t ProviderType) (Client, error) { //nolint:ireturn
 	}
 }
 
-func NewFromToken(token string) (Client, error) { //nolint:ireturn
+func NewFromToken(token string) ( //nolint:ireturn
+	Client,
+	error,
+) {
 	switch {
 	case isGitHubToken(token):
 		return NewGitHubClient(token)
@@ -28,7 +34,10 @@ func NewFromToken(token string) (Client, error) { //nolint:ireturn
 	}
 }
 
-func NewFromRemoteURL(token, remoteURL string) (Client, error) { //nolint:ireturn
+func NewFromRemoteURL(token, remoteURL string) ( //nolint:ireturn
+	Client,
+	error,
+) {
 	switch {
 	case strings.Contains(remoteURL, "github.com"):
 		return NewGitHubClient(token)

@@ -10,10 +10,10 @@ import (
 
 type Service struct {
 	gatewayClient gateway.Client
-	gitClient     *git.Client
+	gitClient     git.Client
 }
 
-func New(gw gateway.Client, gc *git.Client) *Service {
+func New(gw gateway.Client, gc git.Client) *Service {
 	return &Service{
 		gatewayClient: gw,
 		gitClient:     gc,
